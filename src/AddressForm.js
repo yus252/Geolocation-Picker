@@ -3,7 +3,7 @@ import AddressSuggest from './AddressSuggest';
 import AddressInput from './AddressInput';
 import axios from 'axios';
 
-const MAPBOX_APIKEY = 'pk.eyJ1IjoieXVzMjUyIiwiYSI6ImNrYTZhM2VlcjA2M2UzMm1uOWh5YXhvdGoifQ.ZIzOiYbBfwJsV168m42iFg'
+const MAPBOX_APIKEY = 'pk.eyJ1IjoieXVzMjUyIiwiYSI6ImNrYTZhM2VlcjA2M2UzMm1uOWh5YXhvdGoifQ.ZIzOiYbBfwJsV168m42iFg';
 
 class AddressForm extends Component {
   constructor(props) {
@@ -29,25 +29,31 @@ class AddressForm extends Component {
     const self = this;
     const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + query  + '.json?access_token=' + MAPBOX_APIKEY;
     axios.get(url).then(function (response) {
-      if(response.data.features.length > 0){
-        const place = response.data.features[0];
-        const place_name = place.place_name;
-        var address = place_name.split(',');
+
+      if(response.status !== 200 || !response.data.features || response.data.features.length === 0){
+        alert("Address Invalid");
+        const state = self.getInitialState();
+        self.setState(state);
+      }else{
         var city = query;
         var state = '';
         var country = '';
-        if(address.length > 0){
-          country = address[address.length - 1].trim();
-        }
+        var features = response.data.features[0].context;
+        if(features){
+          for(var i = 0; i < features.length; i++){
+            if(features[i].id.substring(0, 7) === 'country'){
+              country = features[i].text.trim();
+            }
 
-        if(address.length > 1){
-          state = address[address.length - 2].trim().split(" ")[0];
-        }
+            if(features[i].id.substring(0, 6) === 'region'){
+              state = features[i].text;
+            }
 
-        if(address.length > 2){
-          city = address[address.length - 3].trim();
+            if(features[i].id.substring(0, 5) === 'place'){
+              city = features[i].text;
+            }
+          }
         }
-
         self.setState({
           'address' : {
             'city': city,
@@ -55,9 +61,6 @@ class AddressForm extends Component {
             'country': country
           }
         })
-      } else {
-        const state = self.getInitialState();
-        self.setState(state);
       }
     });
   }

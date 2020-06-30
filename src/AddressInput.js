@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import AddressItem from './AddressItem';
 
 class AddressInput extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   render() {
     return (

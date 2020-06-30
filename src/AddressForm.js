@@ -74,32 +74,13 @@ class AddressForm extends Component {
   }
 
   onClear(evt) {
+    console.log(this.state);
     const state = this.getInitialState();
     this.setState(state);
   }
-  
-  alert() {
-    if (!this.state.isChecked) {
-      return;
-    }
 
-    if (this.state.coords === null) {
-      return (
-        <div className="alert alert-warning" role="alert">
-          <b>Invalid.</b> The address is not recognized.
-        </div>
-      );
-    } else {
-      return (
-        <div className="alert alert-success" role="alert">
-          <b>Valid Address.</b>  Location is {this.state.coords.lat}, {this.state.coords.lon}.
-        </div>
-      );
-    }
-  }
 
   render() {
-    let result = this.alert();
     return (
         <div className="container">
           <AddressSuggest
@@ -110,12 +91,9 @@ class AddressForm extends Component {
             street={this.state.address.street}
             city={this.state.address.city}
             state={this.state.address.state}
-            postalCode={this.state.address.postalCode}
             country={this.state.address.country}
-            onChange={this.onAddressChange}
             />
           <br/>
-          { result }
 
           <button type="submit" className="btn btn-outline-secondary" onClick={this.onClear}>Clear</button>
         </div>
